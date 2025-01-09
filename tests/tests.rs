@@ -752,6 +752,7 @@ fn test_pop_at() {
 }
 
 #[test]
+#[cfg(not(target_pointer_width = "16"))]
 fn test_sizes() {
     let v = ArrayVec::from([0u8; 1 << 16]);
     assert_eq!(vec![0u8; v.len()], &v[..]);
@@ -765,20 +766,6 @@ fn test_default() {
     let v: ArrayVec<net::TcpStream,  4> = Default::default();
     assert_eq!(s.len(), 0);
     assert_eq!(v.len(), 0);
-}
-
-#[cfg(feature="array-sizes-33-128")]
-#[test]
-fn test_sizes_33_128() {
-    ArrayVec::from([0u8; 52]);
-    ArrayVec::from([0u8; 127]);
-}
-
-#[cfg(feature="array-sizes-129-255")]
-#[test]
-fn test_sizes_129_255() {
-    ArrayVec::from([0u8; 237]);
-    ArrayVec::from([0u8; 255]);
 }
 
 #[test]
@@ -815,21 +802,17 @@ fn allow_max_capacity_arrayvec_type() {
 }
 
 #[should_panic(expected="largest supported capacity")]
+#[cfg(not(target_pointer_width = "16"))]
 #[test]
 fn deny_max_capacity_arrayvec_value() {
-    if mem::size_of::<usize>() <= mem::size_of::<u32>() {
-        panic!("This test does not work on this platform. 'largest supported capacity'");
-    }
     // this type is allowed to be used (but can't be constructed)
     let _v: ArrayVec<(), {usize::MAX}> = ArrayVec::new();
 }
 
 #[should_panic(expected="index out of bounds")]
+#[cfg(not(target_pointer_width = "16"))]
 #[test]
 fn deny_max_capacity_arrayvec_value_const() {
-    if mem::size_of::<usize>() <= mem::size_of::<u32>() {
-        panic!("This test does not work on this platform. 'index out of bounds'");
-    }
     // this type is allowed to be used (but can't be constructed)
     let _v: ArrayVec<(), {usize::MAX}> = ArrayVec::new_const();
 }
